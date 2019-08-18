@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>weather</title>
+    <style type="text/css">
+    html,
+    body {
+        margin: 0;
+        padding: 0;
+        font-family: '微軟正黑體';
+        background-image: url(https://cdn.stocksnap.io/img-thumbs/960w/4ZC4R1LTLZ.jpg);
+        -webkit-background-size: cover;
+        background-size: cover;
+        background-position: 50% -300px;
+        color: #222;
+    }
+
+    .wrap {
+        width: 80%;
+        margin: auto auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    select {
+        font-family: '微軟正黑體';
+        width: 200px;
+        border-radius: 2px;
+        margin-bottom: 20px;
+    }
+
+    .cardWrap {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin: 50px 0px;
+    }
+
+    .card {
+        border: solid 1px #eee;
+        border-radius: 5px;
+        margin: 10px 15px;
+        width: 220px;
+        position: relative;
+        flex: 0 1 1;
+        transition: all .2s;
+        background-color: #fff;
+        box-shadow: 0 0 5px rgba(20%, 20%, 40%, 0.5);
+
+    }
+
+    .card:hover {
+        margin-top: 0px;
+        box-shadow: 0 5px 10px rgba(20%, 20%, 40%, 0.5);
+    }
+
+    h5,
+    p {
+        margin: 0;
+        padding: 10px 15px;
+    }
+
+
+    .title {
+        background-color: #eee;
+        position: relative;
+
+    }
+
+    h4 {
+        margin: 0;
+        padding: 10px 15px;
+    }
+
+    .time {
+        font-size: 12px;
+        display: inline;
+        position: absolute;
+        right: 15px;
+        line-height: 22px;
+        color: gray;
+    }
+
+    .rain {
+        font-size: 12px;
+        line-height: 22px;
+        position: absolute;
+        right: 15px;
+    }
+
+    @media screen and (max-width: 992px) {
+        .wrap {
+            width: 90%;
+            justify-content: center;
+        }
+
+        .card {
+            flex: 1 1 auto;
+        }
+
+    }
+    </style>
+</head>
+
+<body>
+    <div class="wrap">
+        <h1>天氣預報</h1>
+        <select name="location" id='location'>
+            　<option value="全部縣市">全部縣市</option>
+            　<option value="直轄市">直轄市</option>
+            　<option value="宜蘭縣">宜蘭縣</option>
+            　<option value="花蓮縣">花蓮縣</option>
+            　<option value="臺東縣">臺東縣</option>
+            　<option value="金門縣">金門縣</option>
+            　<option value="連江縣">連江縣</option>
+            　<option value="澎湖縣">澎湖縣</option>
+            　<option value="臺北市">臺北市</option>
+            　<option value="新北市">新北市</option>
+            　<option value="桃園市">桃園市</option>
+            　<option value="桃園市">臺南市</option>
+            　<option value="高雄市">高雄市</option>
+            　<option value="臺中市">臺中市</option>
+            　<option value="基隆市">基隆市</option>
+            　<option value="新竹縣">新竹縣</option>
+            　<option value="苗栗縣">苗栗縣</option>
+            　<option value="基隆市">基隆市</option>
+            　<option value="彰化縣">彰化縣</option>
+            　<option value="雲林縣">雲林縣</option>
+            　<option value="南投縣">南投縣</option>
+            　<option value="嘉義縣">嘉義縣</option>
+            　<option value="嘉義市">嘉義市</option>
+            　<option value="屏東縣">屏東縣</option>
+        </select>
+        <div class="cardWrap" id="cardWrap">
+        </div>
+    </div>
+</body>
+<script type="text/javascript">
+var request = new XMLHttpRequest();
+
+request.open('GET', 'https://opendata.cwb.gov.tw/api/v1/rest/datastore/F-C0032-001?Authorization=CWB-FF4D6BC3-9A58-4B2F-AFF4-C4AC78F73CF8');
+
+request.onload = function() {
+    var data = JSON.parse(this.response);
+    console.log(data.records.location);
+    data.records.location.forEach(function(cityInfo) {
+
+        const card = document.createElement('div');
+        card.setAttribute('class', 'card');
+        card.setAttribute('id', cityInfo.locationName);
+
+        const title = document.createElement('div');
+        title.setAttribute('class', 'title');
+
+        const city = document.createElement('h4');
+        city.setAttribute('class', 'city');
+        city.textContent = cityInfo.locationName;
+
+        const time = document.createElement('span');
+        time.setAttribute('class', 'time');
+        time.textContent = '今日18:00-明日6:00';
+
+        const infoTitle = document.createElement('h4');
+        infoTitle.setAttribute('class', 'infoTitle');
+        infoTitle.textContent = cityInfo.weatherElement[0].time[0].parameter.parameterName;
+
+        const tem = document.createElement('p');
+        tem.setAttribute('class', 'tem');
+        tem.textContent = cityInfo.weatherElement[2].time[0].parameter.parameterName + '℃~' + cityInfo.weatherElement[4].time[0].parameter.parameterName + '℃';
+
+        const rain = document.createElement('span');
+        rain.setAttribute('class', 'rain');
+        rain.textContent = '降雨機率：' + cityInfo.weatherElement[1].time[0].parameter.parameterName + '%';
+
+        document.getElementById('cardWrap').appendChild(card);
+        card.appendChild(title);
+        card.appendChild(infoTitle);
+        card.appendChild(tem);
+        title.appendChild(city);
+        city.appendChild(time);
+        tem.appendChild(rain);
+    })
+}
+
+request.send();
+
+function showcity() {
+    var ele = document.querySelectorAll('.card');
+    var loca = document.querySelector('#location');
+    ele.forEach(function(card) {
+        if (loca.value == '全部縣市') {
+            card.style.display = 'block';
+        } else if (loca.value == '直轄市' && (card.id == '臺北市' || card.id == '新北市' || card.id == '桃園市' || card.id == '臺中市' || card.id == '臺南市' || card.id == '高雄市')) {
+            card.style.display = 'block';
+        } else if (card.id == loca.value) {
+            card.style.display = 'block';
+        } else {
+            card.style.display = 'none';
+        }
+    })
+}
+
+document.querySelector('#location').addEventListener('change', showcity);
+</script>
+
+</html>
